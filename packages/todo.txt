@@ -1,0 +1,151 @@
+TODO: Finish App Flow-Chart ->
+    > New Client
+        > Display License Info, Rules, and Welcome
+        > Show Console
+            > Detect if user is logged in
+                - No
+                    > Create New Profile / Log In
+                - Yes
+                    > Update Console
+                        - Friends List
+                            > Click name > show active games
+                        - Current Games
+                            > Click name > show details, join button
+                        - Your Profile Name
+                            > click for Stats
+                                - Num Games Played
+                                - Num Games Won
+                                - Total Awesome Points
+                                - Avg Turns per Game
+                                - Avg Points per Turn
+
+                    > Create New Game
+                        - Game Name
+                        - Number of Users
+                        - Public / Private
+                        - Custom Deck?
+                        - Custom Rules?
+                            - Max Score?
+                            - Timed Responses?
+                            - Block User?
+                            - Kick User?
+                    > Join Existing Game
+                        - Public
+                            - Filter games based on custom rules / users
+                        - Private
+
+    > Client Clicks 'Create New Game'
+        - Show number of users logged in
+        - gameName > default: blank, required
+        - maxPlayers > default: 4
+        - isPrivate > default: false
+            - if true, render textbox for game password
+        - deck[] > default: deckType 'default'
+            - if custom, show matrix of cards and let users add and remove cards from deck pool
+        - rules > default: maxScore 5
+        > Client Clicks Create Game
+            - lastPooped datetime picker
+                - constraint: must not be after current datetime
+            - waiting for clients with loader
+            - show user list
+                - display icon next to name to verify valid lastPooped
+                > numPlayers >= 2 && <= maxPlayers
+                    - display 'Start Game'
+                        > Jump to Game Start
+
+    > Client Clicks 'Search Open Games'
+        - List of available public games populates
+            - highlight games including friends
+            > Client clicks on game
+                > Jump to Show Game Details
+        - Searchbox for game name
+            - highlight games including friends
+            > game is public and open, user clicks
+                > Jump to Show Game Details
+            > game is private, user clicks
+                > Prompt for access key
+                    > pass: Jump to Show Game Details
+                    > fail: deny
+
+        > Show Game Details
+            - User list -- (numPlayers of maxPlayers)
+                - name, lastPooped indicator
+                    > click name, view profile
+                - first name in list is crowned creator
+            - Join Game button
+
+            > Client clicks Join Game
+                - populate name in user list
+                - lastPooped datetime picker
+                    - constraint: must not be after current datetime
+                - waiting for...
+                    - if numPlayers < maxPlayers
+                        -- "more players"
+                    - if numPlayers == maxPlayers
+                        -- "creator to start game"
+                                - show user list
+                    > creator hits start
+                        > Jump to Game Start
+
+    > Game Start
+        - First turn
+            - Sort players array based on time differential between current time and lastPooped
+            - Smallest differential, players[0], promoted to Card Czar
+            - Display to users 'Waiting on Czar'
+
+        - Regular Turn -- Card Czar's view
+            > Card Czar prompted to add new Black Card to pool
+                - decline or push new card to deck
+                - if Card Czar has Awesome Points >= 1, render button spend 1 AP to use custom card this round
+                - else draw random black card, pop from deck
+                > black card displayed to all users
+                    - wait for players[1-(numPlayers-1)] to respond
+                        > display icon in user list if user has responded
+                        - if response time >= maxResponseTime
+                            > handle based on presets -- Skip turn, draw random white card, allow Card Czar to hit skip?
+                    > all players responded
+                        - response queue shuffled
+                        > Card Czar votes on favorite
+                            - Awesome Point awarded to winner
+                            - compare winner's score to maxScore
+                                - if score >= maxScore, Jump To Game Over
+                            - Array is shuffled so players[1] becomes players[0], old [0] becomes new [numPlayers]
+                            > Next turn
+
+        - Regular Turn -- Player view
+            - Display to users 'Waiting on Czar', but...
+            - keep results of previous turn displayed, until...
+            > Czar selects new black card
+                - Display Black Card
+                - Show hand
+                    - if player has AP >= 1, render button spend 1 AP to use custom white card this round
+                > User selects white card from hand
+                    - update user list with icon showing response made
+                    - white card displayed to all players except Card Czar
+                    - display "waiting for players" || "waiting on Card Czar" + loading icon
+                > Czar selects winner
+                - If user skipped from time-out, selected random white card from deck pool, pop card from array, wait Next Turn
+                - Users prompted to write new white card or decline
+                    - if player has AP >= 1, render button to spend 1 AP to add straight to hand
+                        > user clicks: subtract 1 AP, push card to hand, wait Next Turn
+                    > player adds white card, push card to deck pool
+                    - select random white card from deck pool
+                        - pop card from array
+                        > Next Turn
+
+        - Game Over
+
+
+// TODO: CSS definitions
+-- .card
+-- .white-card
+-- .black-card
+-- .accounts-login-wrapper
+-- #wrapper
+-- .main
+-- .header-nav
+-- .header-logged-in
+-- .header-logged-out
+-- .header-accounts
+
+
